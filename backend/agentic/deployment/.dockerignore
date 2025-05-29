@@ -1,0 +1,32 @@
+# Version control
+.git/
+.gitignore
+
+# Terraform
+terraform/
+*.tf
+*.tfstate
+*.tfvars
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Unnecessary files for container
+*.md
+LICENSE

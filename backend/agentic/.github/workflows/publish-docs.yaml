@@ -1,0 +1,59 @@
+name: Update Documentation
+
+on:
+  # Triggered by the publish workflow
+  repository_dispatch:
+    types: [publish-docs-event]
+  
+  # Automatic updates for doc changes
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '==3.11'
+          cache: 'pip'
+          
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[dev]"
+          
+      - name: Configure Git user
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+      - name: Build and deploy docs
+        run: |
+          # Extract current version from pyproject.toml
+          VERSION=$(python -c "import re; f=open('pyproject.toml', 'r'); content=f.read(); f.close(); print(re.search(r'version = \"([0-9.]+)\"', content).group(1))")
+          
+          # Check if this is triggered by publish workflow or doc changes
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "Triggered by publish workflow - updating all documentation"
+            # Deploy the version docs and update latest alias
+            mike deploy --push --update-aliases $VERSION latest
+            # Also update dev docs
+            mike deploy --push dev
+          else
+            echo "Triggered by doc changes - updating only dev docs"
+            # Just update the dev docs
+            mike deploy --push dev
+          fi

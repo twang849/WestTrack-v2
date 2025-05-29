@@ -1,0 +1,87 @@
+site_name: Agentic Docs
+site_url: https://supercog.ai/agentic
+repo_url: https://github.com/supercog-ai/agentic
+repo_name: supercog-ai/agentic
+exclude_docs: docs/hooks/*
+extra:
+  version:
+    provider: mike
+theme:
+  name: material
+  logo: assets/icon-docs.svg
+  favicon: assets/favicon.ico
+  palette:
+    scheme: default
+    primary: black
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - toc.follow
+    - navigation.indexes
+markdown_extensions: 
+  - codehilite
+  - toc
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+plugins:
+  - search
+  - swagger-ui-tag
+  - mike:
+      alias_type: symlink
+      version_selector: true
+hooks:
+  - docs/hooks/generate_swagger.py
+nav:
+  - index.md
+  - getting-started.md
+  - Core Concepts:
+    - core-concepts/index.md
+    - Introduction to Agents: core-concepts/introduction-to-agents.md
+    - Agentic Design Principles: core-concepts/agentic-design-principles.md
+    - Project Structure: core-concepts/project-structure.md
+    - Event System: core-concepts/event-system.md
+    - Event Types: core-concepts/event-types.md
+    - LLM Models: core-concepts/models.md
+  - Building Agents:
+    - building-agents/index.md
+    - Debugging: building-agents/debugging.md
+    - Advanced Custom Agents: building-agents/advanced-custom-agents.md
+    - Agent Teams: building-agents/agent-teams.md
+  - Interacting with Agents:
+    - interacting-with-agents/index.md
+    - CLI: interacting-with-agents/cli.md
+    - REST API: interacting-with-agents/rest-api.md
+    - Next.js Dashboard: interacting-with-agents/nextjs-dashboard.md
+    - Streamlit Dashboard: interacting-with-agents/streamlit-dashboard.md
+  - Tools:
+    - tools/index.md
+    - Building Tools: tools/building-tools.md
+    - Tool Library:
+      - tools/tool-library/index.md
+      - AirbnbCalendarTool: tools/tool-library/airbnb-calendar-tool.md
+      - AuthorizedRestApiTool: tools/tool-library/authorized-rest-api-tool.md
+      - BrowserUseTool: tools/tool-library/browser-use-tool.md
+      - DatabaseTool: tools/tool-library/database-tool.md
+      - DuckDuckGoTool: tools/tool-library/duckduckgo-tool.md
+      - FileDownloadTool: tools/tool-library/file-download-tool.md
+      - GithubTool: tools/tool-library/github-tool.md
+      - GoogleNewsTool: tools/tool-library/google-news-tool.md
+      - HumanInterruptTool: tools/tool-library/human-interrupt-tool.md
+      - IMAPTool: tools/tool-library/imap-tool.md
+      - LinkedinDataTool: tools/tool-library/linkedin-data-tool.md
+      - MCPTool: tools/tool-library/mcp-tool.md
+      - MeetingBaasTool: tools/tool-library/meeting-baas-tool.md
+      - ImageGeneratorTool: tools/tool-library/image-generator-tool.md
+      - PlaywrightTool: tools/tool-library/playwright-tool.md
+      - RAGTool: tools/tool-library/rag-tool.md
+      - RestApiTool: tools/tool-library/rest-api-tool.md
+      - ScaleSerpBrowserTool: tools/tool-library/scaleserp-browser-tool.md
+      - TavilySearchTool: tools/tool-library/tavily-search-tool.md
+      - TextToSpeechTool: tools/tool-library/text-to-speech-tool.md
+      - WeatherTool: tools/tool-library/weather-tool.md
+  - Deployment:
+    - deployment/index.md
+  - rag-support.md
+  - example-agents.md
+  - glossary.md

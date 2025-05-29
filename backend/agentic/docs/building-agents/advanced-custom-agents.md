@@ -1,0 +1,138 @@
+# Advanced Agent Configuration
+
+This document explains how to implement your own agent using a custom `next_turn` method in the Agentic framework. It covers the use cases, benefits, tradeoffs, and best practices to follow.
+
+---
+
+## Why Customize `next_turn`?
+
+The `next_turn` method is the **core orchestration loop** for an agent in Agentic. Overriding it gives you control over:
+
+- How your agent interacts with subagents.
+- How tools are invoked.
+- The logic for multi-step workflows (e.g., retries, research-plan-execute loops).
+- Waiting for user feedback or pausing between steps.
+
+### Example Use Case 
+Our [Open Source Deep Research](https://github.com/supercog-ai/agentic/blob/main/examples/deep_research/oss_deep_research.py) agent uses a custom `next_turn` to orchestrate a multi-step workflow:
+
+Research planning → Human validation → Knowledge accumulation → Section writing → Final report assembly.
+
+This approach allows for iterative refinement and human-in-the-loop validation, making it suitable for complex research tasks. Each step along the way has its own subagent. The custom `next_turn` method calls the subagents and orchestrates the overall workflow.
+
+> **Note**: This workflow supports human-in-the-loop validation, where the agent pauses after an initial plan generation to wait for user feedback before continuing to allow for iterative refinement.
+
+---
+
+## Pros of Writing a Custom `next_turn`
+
+| Benefit                            | Explanation                           |
+|------------------------------------|-------------------------------------------|
+| Full control over agent logic      | Define exactly how the workflow runs step-by-step. |
+| Conditional logic                  | Branch based on intermediate results (e.g., "if feedback is bad, retry"). |
+| Hierarchical coordination          | Easily manage subagents and tools.        |
+| Better custom observability        | Yield concise `Event`s for custom logging and monitoring. |
+
+---
+
+## Cons and Tradeoffs
+
+| Challenge                          | Impact                                |
+|------------------------------------|-------------------------------------------|
+| More boilerplate                   | You'll have to manage event yielding manually and accurately for the agent to run correctly |
+| Less plug-and-play                 | Higher learning curve than basic function-based tools. |
+| Error-prone in async contexts      | Use generators properly and be careful with subagent calls that are also generators. |
+
+---
+
+## Best Practices
+
+### 1. Always Yield `PromptStarted` First
+```python
+yield PromptStarted(self.name, {"content": self.topic})
+```
+
+### 2. Use `WaitForInput` for Pauses
+```python
+yield WaitForInput(self.name, {"feedback": "Please provide feedback on the plan."})
+return  # Safely exit the generator after yielding pause
+```
+
+### 3. Subagent Calls Should Use `yield from`
+```python
+queries = yield from self.query_planner.final_result("Generate queries", request_context={...})
+```
+
+### 4. Always finish with a `TurnEnd` event
+```python
+yield TurnEnd(self.name, {"status": "Turn completed."})
+```
+
+This ensures that:
+
+- Events from the subagent are streamed properly.
+- Subagent run tracking remains isolated.
+- The turn is ended properly.
+
+---
+
+## Event Flow Cheat Sheet
+
+| Event Type          | Purpose                        |
+|----------------------|--------------------------------|
+| `PromptStarted`      | Start of a turn, log the prompt. |
+| `ChatOutput`         | Message from agent or subagent. |
+| `ToolCall` / `ToolResult` | Tool usage events.         |
+| `WaitForInput`       | Pauses until user input.       |
+| `TurnEnd`            | Signals end of a turn + final result. |
+
+---
+
+## Minimal Example of Custom `next_turn`
+
+```python
+def next_turn(self, request: str | Prompt, request_context: dict = {}, **kwargs):
+    topic = request.payload if isinstance(request, Prompt) else request
+    yield PromptStarted(self.name, {"content": topic})
+
+    # Example: Plan → Research → Write
+    plan = yield from self.planner_agent.final_result(
+        "Make a plan", request_context={"topic": topic}
+    )
+
+    yield ChatOutput(self.name, {"content": f"Plan: {plan}"})
+
+    yield WaitForInput(self.name, {"feedback": "Approve the plan or provide feedback."})
+    yield TurnEnd(self.name, {"status": "Turn completed after waiting for input."})
+```
+
+---
+
+## Key Things to Avoid
+
+- Don’t return early without yielding `TurnEnd`.
+- Don’t mix sync calls and generator calls (`yield from`) improperly.
+- Don’t directly call subagent methods like `.next_turn()` — use the proxy API (`final_result`, etc.).
+- Avoid sharing `RunContext` objects across agents.
+
+---
+
+## API Expectations
+
+| Concept        | Expectation                             |
+|----------------|------------------------------------------|
+| `run_id`       | Must be consistent per top-level request. |
+| Subagents      | Should not share history directly with parent. |
+| Logging        | Only log events for the current agent, not subagent events. |
+| History        | Cleanly reset between runs if your agent doesn't need memory. |
+
+---
+
+## Example Use Cases
+
+- **Multi-agent research assistants** (planner → researcher → writer).
+- **Interactive approval workflows** (wait for feedback before proceeding).
+- **Branching agents for complex tasks** (e.g., "if else logic").
+
+---
+
