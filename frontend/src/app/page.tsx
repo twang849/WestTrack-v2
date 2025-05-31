@@ -1,14 +1,11 @@
-import Image from "next/image";
-import Background from "./ui/Background";
-import ChatBar from "./ui/ChatBar";
+import ChatBox from "./ui/ChatComponents";
 
-export default function Home() {
+export default function Home() {;
+
+
   return (
-    <>
-      <Background>
-        <div className="bg-gray-500 h-auto w-[50rem]"></div>
-        <ChatBar/>
-      </Background>
-    </>
+    <div className="bg-purple-800 w-screen h-screen flex items-end justify-center">
+      <ChatBox/>
+    </div>
   );
 }
