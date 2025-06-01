@@ -32,11 +32,6 @@ export function ChatBar ({ addMessage } : { addMessage: (message: string, fromUs
   function handlePrompt (eventObject: React.FormEvent<HTMLFormElement>) {
     eventObject.preventDefault();
 
-    // const form = eventObject.target as HTMLFormElement;
-    // const formData = new FormData(form);
-
-    // const formJson = Object.fromEntries(formData.entries());
-    // console.log(formJson);
     console.log(input);
 
     addMessage(input, true);
@@ -49,7 +44,7 @@ export function ChatBar ({ addMessage } : { addMessage: (message: string, fromUs
               Enter prompt.
           </label>
           <form className="flex flex-row items-center mt-5" onSubmit={handlePrompt}>
-              <input onChange={e => setInput(e.target.value)} name="prompt" placeholder="Ask a question" id="user-input" className="bg-white w-[55rem] rounded-2xl mr-5 text-black p-3" type="text"/>
+              <input onChange={e => setInput(e.target.value)} value={input} name="prompt" placeholder="Ask a question" id="user-input" className="bg-white w-[55rem] rounded-2xl mr-5 text-black p-3" type="text"/>
               <button className="bg-black rounded-2xl p-1 hover:bg-gray-700 active:bg-gray-500 transition">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
