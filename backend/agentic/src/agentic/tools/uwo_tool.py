@@ -180,4 +180,4 @@ if __name__ == "__main__":
     #     "https://www.westerncalendar.uwo.ca/PolicyPages.cfm?PolicyCategoryID=6&command=showCategory&SelectedCalendar=Live&ArchiveID="
     # ])
 
-    print(obj.query("what are breadth requirements at uwo"))
+    print(obj.query("what are breadth requirements for undergrads at uwo"))

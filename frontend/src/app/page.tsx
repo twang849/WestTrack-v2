@@ -1,6 +1,6 @@
 import ChatBox from "./ui/ChatComponents";
 
-export default function Home() {;
+export default async function Home() {;
 
 
   return (

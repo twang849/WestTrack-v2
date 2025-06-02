@@ -3,22 +3,51 @@
 import { useState } from "react";
 
 type Message = {
-  message: string,
+  text: string,
   fromUser?: boolean
 }
 
 export default function ChatBox () {
   const [messages, setMessages] = useState<Message[]>([]);
+
+  async function sendPrompt (msg: Message): Promise<Message> {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    return {
+      text: msg.text,
+      fromUser: false
+    }
+
+    const response = await fetch("http://127.0.0.1:8000/prompt", {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ text: msg.text }),
+    });
+    const responseText = await response.json();
+    const msgObject = {
+      text: responseText,
+      fromUser: false
+    }
+
+    return msgObject;
+  }
   
-  function addMessage(message: string, fromUser: boolean) {
-    setMessages(prevMessages => [...prevMessages, {message, fromUser}]);
+  async function addMessage(messageTxt: string, fromUserValue: boolean) {
+    const msgObject = { 
+      text: messageTxt,
+      fromUser: fromUserValue
+    }
+
+    setMessages(messages => [...messages, msgObject]);
+    const response: Message = await sendPrompt(msgObject);
+    setMessages(messages => [...messages, response]);
   }
 
   return (
     <div className="grid grid-rows-[auto_5rem] h-screen justify-center py-10">
       <div className="bg-gray-500 h-full rounded-2xl p-5">
-        {messages.map((message, idx) => {
-           return <ChatBubble messageObject={message} key={idx}/>;
+        {messages.map((messageObj, idx) => {
+           return <ChatBubble messageObject={messageObj} key={idx}/>;
         })}
       </div>
       <ChatBar addMessage={addMessage}/>
@@ -31,8 +60,6 @@ export function ChatBar ({ addMessage } : { addMessage: (message: string, fromUs
 
   function handlePrompt (eventObject: React.FormEvent<HTMLFormElement>) {
     eventObject.preventDefault();
-
-    console.log(input);
 
     addMessage(input, true);
     setInput("");
@@ -65,7 +92,7 @@ export function ChatBubble({ messageObject }: {messageObject: Message} ) {
             : 'bg-gray-200 text-black rounded-bl-none'
           }`}
       >
-        {messageObject.message}
+        {messageObject.text}
       </div>
     </div>
   );
