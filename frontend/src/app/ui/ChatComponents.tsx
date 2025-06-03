@@ -9,14 +9,11 @@ type Message = {
 
 export default function ChatBox () {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(false);
 
   async function sendPrompt (msg: Message): Promise<Message> {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    return {
-      text: msg.text,
-      fromUser: false
-    }
+    setLoading(true);
+    console.log("Starting API call")
 
     const response = await fetch("http://127.0.0.1:8000/prompt", {
       method: 'POST',
@@ -25,10 +22,12 @@ export default function ChatBox () {
     });
     const responseText = await response.json();
     const msgObject = {
-      text: responseText,
+      text: responseText.message,
       fromUser: false
     }
 
+    console.log("Ending API call")
+    setLoading(false);
     return msgObject;
   }
   
@@ -45,10 +44,11 @@ export default function ChatBox () {
 
   return (
     <div className="grid grid-rows-[auto_5rem] h-screen justify-center py-10">
-      <div className="bg-gray-500 h-full rounded-2xl p-5">
+      <div className="bg-gray-500 h-full rounded-2xl p-5 overflow-y-auto">
         {messages.map((messageObj, idx) => {
            return <ChatBubble messageObject={messageObj} key={idx}/>;
         })}
+        { loading && <div id="spinner " className="custom-spin border-4 border-t-transparent rounded-[50%] w-8 h-8"/>}
       </div>
       <ChatBar addMessage={addMessage}/>
     </div>
@@ -86,7 +86,7 @@ export function ChatBubble({ messageObject }: {messageObject: Message} ) {
   return (
     <div className={`flex ${messageObject.fromUser ? 'justify-end' : 'justify-start'} mb-2`}>
       <div
-        className={`max-w-xs px-4 py-2 rounded-2xl text-sm
+        className={`max-w-xs px-4 py-2 rounded-2xl text-lg
           ${messageObject.fromUser
             ? 'bg-blue-600 text-white rounded-br-none'
             : 'bg-gray-200 text-black rounded-bl-none'

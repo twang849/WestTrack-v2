@@ -2,7 +2,7 @@ from typing import Union
 from pydantic import BaseModel
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from agents.academic_advisor import agent
+from agents.academic_advisor import agent
 
 class Message(BaseModel):
     text: str
@@ -26,9 +26,10 @@ def read_root():
     return {"message": "Welcome to the WestTrack v2.0 back end."}
 
 @app.post("/prompt")
-async def prompt(msg: Message):
-    # response = await agent.turn("")
+def prompt(msg: Message):
+    response: str = agent.turn(msg.text)
+    
     return {
-        "message": msg.text,
+        "message": response,
         "prompt": msg.text
     }

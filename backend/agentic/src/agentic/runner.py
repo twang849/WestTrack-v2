@@ -69,6 +69,7 @@ class RayAgentRunner:
             if self._should_print(event, ignore_depth=True):
                 results.append(str(event))
 
+        print(results)
         return "".join(results)
 
     def __lshift__(self, prompt: str):
