@@ -69,7 +69,6 @@ class RayAgentRunner:
             if self._should_print(event, ignore_depth=True):
                 results.append(str(event))
 
-        print(results)
         return "".join(results)
 
     def __lshift__(self, prompt: str):
@@ -81,16 +80,22 @@ class RayAgentRunner:
         if event.is_output and (ignore_depth or event.depth == 0):
             return True
         elif isinstance(event, ToolError):
+            print(str(event))
             return self.debug != ""
         elif isinstance(event, (ToolCall, ToolResult)):
+            print(str(event))
             return self.debug.debug_tools()
         elif isinstance(event, PromptStarted):
+            print(str(event))
             return self.debug.debug_llm() or self.debug.debug_agents()
         elif isinstance(event, TurnEnd):
+            print(str(event))
             return self.debug.debug_agents()
         elif isinstance(event, (StartCompletion, FinishCompletion)):
+            print(str(event))
             return self.debug.debug_llm()
         else:
+            print(str(event))
             return False
 
     def set_debug_level(self, level: str):
