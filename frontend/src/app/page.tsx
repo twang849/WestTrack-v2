@@ -1,4 +1,4 @@
-import ChatBox from "./ui/ChatComponents";
+import ChatBox from "./ui/ChatBox";
 
 import { Merriweather } from "next/font/google";
 

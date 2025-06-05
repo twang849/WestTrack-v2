@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { ChatBar } from "./ChatBar";
+import Typewriter from "./TypewriterEffect";
 
 type Message = {
   text: string,
@@ -55,43 +57,13 @@ export default function ChatBox () {
            return <ChatBubble messageObject={messageObj} key={idx}/>;
         })}
         { loading && <div id="spinner " className="custom-spin border-4 border-t-transparent rounded-[50%] w-8 h-8"/>}
-        <div className="h-[10rem]" ref={scrollRef}></div>
+        <div className="h-[10rem]" ref={scrollRef}/>
       </div>
       <ChatBar loadingBoolean={loading} addMessage={addMessage}/>
     </div>
   );
 }
 
-export function ChatBar ({ loadingBoolean, addMessage } : { loadingBoolean: boolean, addMessage: (message: string, fromUser: boolean) => void}) {
-  const [input, setInput] = useState("")
-
-  useEffect(() => {
-    if (input == "") console.log();
-  }, [input]);
-
-  function handlePrompt (eventObject: React.FormEvent<HTMLFormElement>) {
-    eventObject.preventDefault();
-
-    addMessage(input, true);
-    setInput("");
-  }
-
-  return (
-      <div className="">
-          <label htmlFor="user-input" className="sr-only">
-              Enter prompt.
-          </label>
-          <form className="flex flex-row items-center mt-5" onSubmit={handlePrompt}>
-              <input onChange={e => setInput(e.target.value)} disabled={loadingBoolean} value={input} name="prompt" placeholder="Ask a question" id="user-input" className="bg-white w-[75rem] rounded-2xl mr-5 text-black p-3" type="text"/>
-              <button inert={ input == ""} className="bg-black rounded-2xl p-1 hover:bg-gray-700 active:bg-gray-500 transition">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
-                  </svg>
-              </button>
-          </form>
-      </div>
-  );
-}
 
 export function ChatBubble({ messageObject }: {messageObject: Message} ) {
   return (
@@ -103,8 +75,10 @@ export function ChatBubble({ messageObject }: {messageObject: Message} ) {
             : 'bg-gray-200 text-black rounded-bl-none'
           }`}
       >
-        <ReactMarkdown>{messageObject.text}</ReactMarkdown>
+        <Typewriter text={messageObject.text}></Typewriter>
       </div>
     </div>
   );
 }
+
+
