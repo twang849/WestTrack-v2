@@ -24,7 +24,7 @@ load_dotenv()
 
 @tool_registry.register(
     name="UWOTool",
-    description="A tool to answer questions about the academic policies of Western University.",
+    description="A tool to access information about the academic policies of Western University.",
     dependencies=[
         Dependency(
             name="langchain",
@@ -97,7 +97,7 @@ class UWOTool(BaseAgenticTool):
     def get_tools(self) -> list[Callable]:
             """Return a list of functions that will be exposed to the agent."""
             return [
-                self.query
+                self.queryDatabase
             ]
     
     def __init__(self):
@@ -159,7 +159,7 @@ class UWOTool(BaseAgenticTool):
         # Index chunks
         _ = self.vector_store.add_documents(documents=all_splits)
 
-    def query(self, query):
+    def queryDatabase(self, query):
         """Function to query the vector database and retrieve semantically similar information.
         
         Args:

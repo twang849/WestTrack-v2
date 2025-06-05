@@ -50,20 +50,24 @@ export default function ChatBox () {
 
   return (
     <div className="flex flex-col h-screen justify-center py-10">
-      <div className="bg-gray-500 grow max-h-[40rem] rounded-2xl p-5 overflow-y-auto hide-scrollbar">
+      <div className="bg-gray-500 grow max-h-[75vh] rounded-2xl p-5 overflow-y-auto hide-scrollbar">
         {messages.map((messageObj, idx) => {
            return <ChatBubble messageObject={messageObj} key={idx}/>;
         })}
         { loading && <div id="spinner " className="custom-spin border-4 border-t-transparent rounded-[50%] w-8 h-8"/>}
         <div className="h-[10rem]" ref={scrollRef}></div>
       </div>
-      <ChatBar addMessage={addMessage}/>
+      <ChatBar loadingBoolean={loading} addMessage={addMessage}/>
     </div>
   );
 }
 
-export function ChatBar ({ addMessage } : { addMessage: (message: string, fromUser: boolean) => void}) {
+export function ChatBar ({ loadingBoolean, addMessage } : { loadingBoolean: boolean, addMessage: (message: string, fromUser: boolean) => void}) {
   const [input, setInput] = useState("")
+
+  useEffect(() => {
+    if (input == "") console.log();
+  }, [input]);
 
   function handlePrompt (eventObject: React.FormEvent<HTMLFormElement>) {
     eventObject.preventDefault();
@@ -78,8 +82,8 @@ export function ChatBar ({ addMessage } : { addMessage: (message: string, fromUs
               Enter prompt.
           </label>
           <form className="flex flex-row items-center mt-5" onSubmit={handlePrompt}>
-              <input onChange={e => setInput(e.target.value)} value={input} name="prompt" placeholder="Ask a question" id="user-input" className="bg-white w-[75rem] rounded-2xl mr-5 text-black p-3" type="text"/>
-              <button className="bg-black rounded-2xl p-1 hover:bg-gray-700 active:bg-gray-500 transition">
+              <input onChange={e => setInput(e.target.value)} disabled={loadingBoolean} value={input} name="prompt" placeholder="Ask a question" id="user-input" className="bg-white w-[75rem] rounded-2xl mr-5 text-black p-3" type="text"/>
+              <button inert={ input == ""} className="bg-black rounded-2xl p-1 hover:bg-gray-700 active:bg-gray-500 transition">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                   </svg>

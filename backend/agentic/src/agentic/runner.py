@@ -53,19 +53,19 @@ class RayAgentRunner:
         else:
             self.debug = DebugLevel(os.environ.get("AGENTIC_DEBUG") or "")
         
-        runtime_directory = get_runtime_directory()
-        try:
-            os.chdir(runtime_directory)
-        except:
-            pass
+        # runtime_directory = get_runtime_directory()
+        # try:
+        #     os.chdir(runtime_directory)
+        # except:
+        #     pass
 
     def turn(self, request: str, print_all_events: bool = False) -> str:
         """Runs the agent and waits for the turn to finish, then returns the results
         of all output events as a single string."""
         results = []
         for event in self.facade.next_turn(request, debug=self.debug):
-            if print_all_events:
-                print(event.__dict__)
+            # if print_all_events:
+                # print(event.__dict__)
             if self._should_print(event, ignore_depth=True):
                 results.append(str(event))
 
@@ -89,13 +89,10 @@ class RayAgentRunner:
             print(str(event))
             return self.debug.debug_llm() or self.debug.debug_agents()
         elif isinstance(event, TurnEnd):
-            print(str(event))
             return self.debug.debug_agents()
         elif isinstance(event, (StartCompletion, FinishCompletion)):
-            print(str(event))
             return self.debug.debug_llm()
         else:
-            print(str(event))
             return False
 
     def set_debug_level(self, level: str):
