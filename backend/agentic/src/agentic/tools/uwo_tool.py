@@ -7,6 +7,7 @@ import bs4
 from langchain import hub
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
+from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
@@ -153,7 +154,7 @@ class UWOTool(BaseAgenticTool):
         )
         docs = loader.load()
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        text_splitter = SemanticChunker(OpenAIEmbeddings())
         all_splits = text_splitter.split_documents(docs)
 
         # Index chunks
@@ -180,4 +181,4 @@ if __name__ == "__main__":
     #     "https://www.westerncalendar.uwo.ca/PolicyPages.cfm?PolicyCategoryID=6&command=showCategory&SelectedCalendar=Live&ArchiveID="
     # ])
 
-    print(obj.query("what are breadth requirements for undergrads at uwo"))
+    print(obj.queryDatabase("what are breadth requirements for undergrads at uwo"))

@@ -23,9 +23,8 @@ export default function Typewriter ({ text, speed=50 } : {text: string, speed?: 
   const {displayText, isTyping } = useTypewriter(text, speed);
 
   return (
-    <div className="inline-flex">
+    <div className="">
       <ReactMarkdown>{displayText + (isTyping ? "|" : "")}</ReactMarkdown>
-      {/* {isTyping && <span className="font-bold">|</span>} */}
     </div>
   );
 };

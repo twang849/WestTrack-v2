@@ -93,6 +93,7 @@ dependencies = [
     "langchain-chroma>=0.2.3",
     "langchain-community>=0.3.24",
     "langchain-core==0.3.59",
+    "langchain-experimental>=0.3.4",
     "langchain-google-genai==2.1.4",
     "langchain-ollama==0.2.2",
     "langchain-openai==0.3.1",

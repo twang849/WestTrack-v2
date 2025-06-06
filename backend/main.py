@@ -27,9 +27,8 @@ def read_root():
 
 @app.post("/prompt")
 def prompt(msg: Message):
-    response: str = agent.turn(msg.text)
+    response = agent.turn(msg.text)
     
     return {
         "message": response,
-        "prompt": msg.text
     }
